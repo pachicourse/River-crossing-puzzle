@@ -1,0 +1,33 @@
+mod WSCY is
+      sorts Side Animals State .
+      ops left right : -> Side [ctor] .
+
+      ops w s c y : Side -> Animals [ctor] . --- wolf, sheep, cabbage, you
+      op __ : Animals Animals -> Animals [ctor assoc comm] . ---多重集合演算子
+      op {_} : Animals -> State [ctor] .
+      
+      ---define methods 
+      op initial : -> State .
+      op Failed : Animals -> Bool .
+      op change : Side -> Side .
+      
+      vars S S’ : Side .
+      var A : Animals .
+
+      eq initial = { y(left) w(left) s(left) c(left) } .
+
+      eq change(left) = right .
+      eq change(right) = left .
+
+      ceq Failed(w(S) s(S) y(S’) A) = true if S =/= S’ .
+      ceq Failed(c(S) s(S) y(S’) A) = true if S =/= S’ .
+      
+      eq Failed(A) = false [owise] . --- owise...条件式外の時
+      
+      crl [wolf] : { w(S) y(S) A } => { y(change(S)) w(change(S)) A } if not(Failed(w(change(S)) y(change(S)) A)) .
+      rl [sheep] : { s(S) y(S) A } => { y(change(S)) s(change(S)) A } .
+      crl [cabbage] : { c(S) y(S) A } => { y(change(S)) c(change(S)) A } if not(Failed(y(change(S)) c(change(S)) A)) .
+      crl [onlyYou] : { y(S) A } => { y(change(S)) A } if not(Failed(y(change(S)) A)) .
+endm
+
+---search initial =>* { w(right) s(right) c(right) y(right) } .
